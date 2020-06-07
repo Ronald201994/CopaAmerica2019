@@ -1,0 +1,449 @@
+--Creación de la Base de Datosue no l
+USE MASTER 
+GO
+
+IF DB_ID('BD_CopaAmerica2019') IS NOT NULL
+	DROP DATABASE BD_CopaAmerica2019
+GO
+
+CREATE DATABASE BD_CopaAmerica2019
+GO
+
+USE BD_CopaAmerica2019
+GO
+
+--Creación de tablas
+CREATE TABLE PaisEquipo
+(
+	Id CHAR(3) NOT NULL PRIMARY KEY,
+	Nombre VARCHAR(100) NOT NULL,
+	Apodo VARCHAR(100) NOT NULL,
+	Descripcion VARCHAR(800) NOT NULL,
+	Foto VARCHAR(800) NOT NULL,
+	Participaciones INT NOT NULL,
+	Titulos INT NOT NULL,
+	Subcampeonatos INT NOT NULL,
+	MedallasOro INT NOT NULL,
+	MedallasPlata INT NOT NULL,
+	MedallasBronce INT NOT NULL,
+	TitulosMundiales INT NOT NULL
+)
+GO
+
+CREATE TABLE Camiseta
+(
+	Id INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+	Pais VARCHAR(30) NOT NULL,
+	Jugador VARCHAR(30) NOT NULL,
+	Numero INT NOT NULL,
+	Cantidad INT NOT NULL,
+	Precio DECIMAL(15,2) NOT NULL,
+	Descripcion VARCHAR(30) NOT NULL
+)
+GO
+
+SELECT * FROM Camiseta
+GO
+
+CREATE TABLE Entrenador
+(
+	Id CHAR(3) NOT NULL PRIMARY KEY,
+	Nombre VARCHAR(50) NOT NULL,
+	Apodo VARCHAR(50) NOT NULL,
+	Nacionalidad VARCHAR(50) NOT NULL,
+	Titulos INT NOT NULL,
+	Edad INT NOT NULL,
+	IdPaisEquipo CHAR(3) NOT NULL FOREIGN KEY REFERENCES PaisEquipo
+)
+
+CREATE TABLE EquiposEntrenador
+(
+	Id CHAR(3) NOT NULL PRIMARY KEY,
+	Nombre VARCHAR(50) NOT NULL,
+	Pais VARCHAR(50) NOT NULL,
+	Titulos INT NOT NULL,
+	IdEntrenador CHAR(3) NOT NULL FOREIGN KEY REFERENCES Entrenador
+)
+GO
+
+CREATE TABLE Jugador
+(
+	Id CHAR(4) NOT NULL PRIMARY KEY,
+	Nombre VARCHAR(50) NOT NULL,
+	ApePaterno VARCHAR(50) NOT NULL,
+	ApeMaterno VARCHAR(50) NOT NULL,
+	Edad INT NOT NULL,
+	Apodo VARCHAR(50) NOT NULL,
+	Participaciones INT NOT NULL,
+	Titulos INT NOT NULL,
+	SubCampeonatos INT NOT NULL,
+	MedallasOro INT NOT NULL,
+	MedallasPlata INT NOT NULL,
+	MedallasBronce INT NOT NULL,
+	GolesEnCopaAmerica INT NOT NULL,
+	Asistencias INT NOT NULL,
+	Autogoles INT NOT NULL,
+	ClubActual VARCHAR(50) NOT NULL,
+	GolesCarrera INT NOT NULL,
+	NumCamisetaSeleccion INT NOT NULL,
+	NumLesiones INT NOT NULL,
+	TotalTarjetasRojas INT NOT NULL,
+	TotalTarjetasAmarrilla INT NOT NULL,
+	TarjetasRojasActual INT NOT NULL,
+	TarjetasAmarrillasActual INT NOT NULL,
+	MejorJugador INT NOT NULL,
+	FechaNacimiento VARCHAR(50) NOT NULL,
+	Foto VARCHAR(700) NOT NULL,
+	IdPaisEquipo CHAR(3) NOT NULL FOREIGN KEY REFERENCES PaisEquipo,
+	CapitanSeleccion CHAR(2) NOT NULL DEFAULT 'NO'
+)
+GO
+
+CREATE TABLE Estadio
+(
+	Id CHAR(3) NOT NULL PRIMARY KEY,
+	Nombre VARCHAR(50) NOT NULL,
+	Apodo VARCHAR(50) NOT NULL,
+	Descripcion VARCHAR(500) NOT NULL,
+	Foto VARCHAR(250) NOT NULL,
+	IdPaisEquipo CHAR(3) NOT NULL FOREIGN KEY REFERENCES PaisEquipo,
+	PartidosJugadosActual INT NOT NULL,
+	TotalPartidosCopaAmerica INT NOT NULL,
+	NumFinales INT NOT NULL,
+	Fundacion VARCHAR(40) NOT NULL,
+	Capacidad VARCHAR(40) NOT NULL,
+	Dimensiones VARCHAR(140) NOT NULL,
+	Ubicacion VARCHAR(40) NOT NULL,
+	Coordenadas VARCHAR(100) NOT NULL,
+	Propietario VARCHAR(100) NOT NULL,
+)
+GO
+
+CREATE TABLE PartidoFinal
+(
+	Id CHAR(3) NOT NULL PRIMARY KEY,
+	IdEstadio CHAR(3) NOT NULL FOREIGN KEY REFERENCES Estadio,
+	MejorJugador VARCHAR(20) NOT NULL,
+	GolesEquipoUno INT NOT NULL,
+	GolesEquipoDos INT NOT NULL,
+	Ganador VARCHAR(40) NOT NULL,
+	Perdedor VARCHAR(40) NOT NULL,
+	NombreCopaAmerica VARCHAR(40) NOT NULL, 
+	Asistencia INT NOT NULL,
+	Arbitro VARCHAR(40) NOT NULL
+)
+GO
+
+SELECT * FROM Entrenador
+SELECT * FROM PaisEquipo
+SELECT * FROM Estadio
+SELECT * FROM Jugador
+SELECT * FROM EquiposEntrenador
+GO
+
+SELECT * FROM Estadio WHERE IdPaisEquipo = '001'
+GO
+
+SELECT * FROM Estadio E INNER JOIN PaisEquipo PE ON E.IdPaisEquipo = PE.Id WHERE PE.Nombre = 'Peru' AND E.Nombre ='Estadio Nacional del Perú'
+GO
+
+SELECT * FROM Jugador J INNER JOIN PaisEquipo PE ON J.IdPaisEquipo = PE.Id WHERE J.Nombre +' '+J.ApePaterno = 'José Paolo Guerrero' AND PE.Nombre = 'Peru'
+GO
+
+SELECT J.Nombre +' '+J.ApePaterno, PE.Nombre
+FROM Jugador J INNER JOIN PaisEquipo PE
+ON J.IdPaisEquipo = PE.Id
+WHERE J.IdPaisEquipo = '001' AND J.Nombre +' '+J.ApePaterno = 'José Paolo Guerrero'
+GO
+
+--Insertar registros a las tablas
+INSERT INTO PaisEquipo 
+VALUES('001', 'Peru', 'La Blanquirroja','La selección de fútbol de Perú, también conocida como La Blanquirroja, es el equipo representativo de ese país en las competiciones oficiales de fútbol. Su organización está a cargo de la Federación Peruana de Fútbol, la cual es miembro de la Confederación Sudamericana de Fútbol. Su debut se produjo el 1 de noviembre de 1927 ante la selección de Uruguay en el Campeonato Sudamericano de aquel año.', 'https://cdne.elbocon.pe/thumbs/uploads/img/2019/05/29/seleccion-peruana-la-lista-de-23-convocados-de-187006-026557-jpg_1000x563.jpg', 32, 2, 0, 0, 4, 3, 0),
+	  ('002', 'Chile',	'La roja ', 'La selección de fútbol de Chile, también conocida como la Roja, término afianzado en la década de 1980, es el equipo representativo de dicho país en la categoría masculina de fútbol, la tercera selección nacional más antigua de América y una de las veinte en el mundon. Disputó su primer partido internacional el 27 de mayo de 1910 ante Argentina.','http://triunfo.lanacion.cl/wp-content/uploads/sites/2/2018/08/PS_196551-2.jpg',	39,	2,	4,	5,  4, 0, 0)     
+GO
+
+insert into PaisEquipo values('003', 'Brasil', 'La Canarinha', 'La selección de fútbol de Brasil (Seleção Brasileira de Futebol en portugués) es el equipo que representa a dicho país en las competiciones oficiales. Su organización está a cargo de la Confederación Brasileña de Fútbol, perteneciente a la Confederación Sudamericana de Fútbol (Conmebol). Conocida como «Scratch do ouro», «La Verde-amarela» o «La Canarinha», se encuentra afiliada a la FIFA desde 1923? y es miembro asociado y fundador de la Conmebol desde 1916', 'http://sports.bycampbell.com/wp-content/uploads/2017/04/brazil.jpg', 33,	8, 0, 8, 3,	1, 5)
+insert into PaisEquipo values('004','Bolivia',	'La Verde', 'La selección de fútbol de Bolivia, conocida como La Verde, es el equipo representativo de país en las competiciones oficiales de fútbol,Su organización está a cargo de la Federación Boliviana de Fútbol, cuya fundación data del 12 de septiembre de 1925, hace 93 años. Está afiliada a la FIFA desde 1926 y es uno de los miembros de la CONMEBOL desde 1926. Jugó su primer partido el 12 de octubre de 1926 en Santiago, Chile, correspondiente al Campeonato Sudamericano de 1926.','https://e.ad.amtv.pe/futbol-mundial-bolivia-presento-primera-convocatoria-cara-copa-america-2019-n358572-808x454-549253.jpg',	32,	1,	1,	0,	0,	0,0)
+insert into PaisEquipo values('005','Venezuela','Vino Tinto', 'La selección de fútbol de Venezuela, también conocida como La Vinotinto, es el equipo formado por jugadores de nacionalidad venezolana que representa al país y a la Federación Venezolana de Fútbol. En las competiciones oficiales de la disciplina desde 1938. Es miembro pleno de la Federación Internacional de Fútbol Asociación (FIFA) desde 19523? y de la Confederación Sudamericana de Fútbol (Conmebol) desde 1953,4? siendo la última de las diez federaciones suramericanas en formarse y afiliarse. Su debut se produjo el 12 de febrero de 1938 ante la selección de Panamá en los IV Juegos Centroamericanos y del Caribe.5','https://prod.media.libero.pe/660x378/libero/imagen/2019/01/28/noticia-1548697228-seleccion-de-venezuela.jpg',18,	2,	0,	0,	0,	0,0)
+insert into PaisEquipo values('006',  'Argentina','La Albiceleste', 'La selección de fútbol de Argentina es el equipo representativo de dicho país en la categoría masculina de la disciplina. Su organización está a cargo desde 1893 por la Asociación del Fútbol Argentino (AFA), perteneciente a la Confederación Sudamericana de Fútbol (Conmebol), ente rector de este deporte en América del Sur, y afiliado a la Federación Internacional de Fútbol Asociación (FIFA). Disputó el primer partido internacional fuera de Argentina el 16 de mayo de 1901, en Montevideo, contra Uruguay.','https://www.cronista.com/__export/1527640872412/sites/diarioelcronista/img/2018/05/29/17112017-seleccionargentina_crop1526593291865_crop1526866065607_crop1527640871923.jpg_258117318.jpg',41, 14,14,  2,  0,  0, 2)
+insert into PaisEquipo values('007', 'Colombia',  'Los Cafeteros', 'La selección de fútbol de Colombia es el equipo representativo del país en las competencias de este deporte. Está regentada por la Federación Colombiana de Fútbol, la cual está afiliada a la Confederación Sudamericana de Fútbol (Conmebol) y la Federación Internacional de Fútbol Asociado (FIFA), por lo que la selección participa en las competencias que estas entidades organizan y juegan. Disputó su primer partido internacional en la ciudad de Panamá el 10 de febrero de 1938.','https://files.rcnradio.com/public/styles/image_834x569/public/2018-06/colombia_vs_senegal_-_afp_1_0.jpg?itok=sKpBculW', 24, 1,  0,  0,  0,  0, 0)
+insert into PaisEquipo values('008', 'Ecuador','La Banana Mecánica', 'La Selección de fútbol de Ecuador es el equipo representativo de ese país. Como máximos logros en copas internacionales cuentan la medalla de oro ganada el los Juegos Panamericanos de 2007 con su selección Panamericana y el Campeonato Sudamericano Sub-20 de Chile 2019 siendo este su primer y máximo logro Conmebol a nivel de selecciones.','https://www.eluniverso.com/sites/default/files/styles/powgallery_1024/public/fotos/2019/03/ecu.jpg?itok=DSNaISkZ',28, 0 ,0,  0,  0,  0, 0)
+insert into PaisEquipo values('009', 'Paraguay',  'Los Guaraníes', 'La Selección de fútbol de Paraguay es el equipo representativo del país en las competiciones oficiales de dicho deporte. Su organización está a cargo de la Asociación Paraguaya de Fútbol (APF), perteneciente a la Conmebol. Por lo general, sus partidos como local los juega en el estadio Defensores del Chaco.','https://i.ytimg.com/vi/if9vF86q-wA/maxresdefault.jpg', 36,  2 ,0,  0,  0,  0, 0)
+insert into PaisEquipo values('010','Uruguay', 'La Celeste ', 'La selección de fútbol de Uruguay es el equipo representativo del país en las competiciones oficiales. La organización está a cargo de la Asociación Uruguaya de Fútbol (AUF), perteneciente a la Confederación Sudamericana de Fútbol (Conmebol). Su primer partido internacional lo disputó en la ciudad de Montevideo el 15 de mayo de 1901 contra la Selección de fútbol de Argentina.','https://imagenes.montevideo.com.uy/imgnoticias/201710/_W933_80/629854.jpg',     44, 15, 0,  0, 15,  0, 2)
+insert into PaisEquipo values('011', 'Japon', 'El equipo del sol naciente', 'La selección de fútbol de Japón. Es el equipo representativo del país y está afiliado desde 1920 a la Asociación de Fútbol de Japón (???????? Nippon Sakka Kyokai?) en las competiciones oficiales organizadas por la Confederación Asiática de Fútbol y la Federación Internacional de Asociaciones de Fútbol. La Asociación Japonesa fue fundada en 1920, e integrada a la FIFA en 1929; Diez años más tarde se marcharían por motivos referentes a la Segunda Guerra Mundial, y no volverían a afiliarse hasta 1950 y posteriormente a la Confederación Asiática.', 'https://ep01.epimg.net/especiales/2018/mundial-de-futbol/img/selecciones/japon.jpg', 1,0,0,0,0,0, 0)
+insert into PaisEquipo values('012', 'Qatar', 'El Marrón', 'La selección de fútbol de Catar. Representa a ese país en las competiciones oficiales del deporte, y está coordinado por la Asociación de Fútbol de Catar, perteneciente a la Confederación Asiática de Fútbol. Su máximo logro es la Copa Asiática, la competición continental organizada por la CAF, que logró ganar en la edición 2019 bajo el mando del español Félix Sánchez Bas, quien también es el entrenador del conjunto oriental desde 2017. Tendrá su primera participación en la Copa Mundial de la FIFA en 2022, cuando también actúe de anfitrión.', 'https://images.ole.com.ar/2018/04/05/ryklYj7oM_1256x620.jpg',1,  0, 0,  0,  0,  0, 0)
+GO
+
+INSERT INTO Entrenador
+VALUES('001', 'Ricardo Gareca', 'El Tigre', 'Argentina', 7, 61, '001'),
+	  ('002', 'Reinaldo Rueda', 'triple R ','Colombiana ',7, 62,'002'),
+	  ('003', 'Adenor Leonardo Bacchi', 'Tite', 'Brasileña', 8, 58, '003'),
+	  ('004', 'Eduardo Andres Villegas Camarai','','Boliviana', 17, 55, '004'),
+	  ('005', 'Rafael Edgar Dudamel Ochoa', 'El Chamo', 'Venezolana', 5, 46, '005'),
+	  ('006', 'Lionel Sebastián Scaloni', '', 'Argentina', 6, 41, '006'),
+	  ('007', 'Carlos Manuel Brito Leal Queiroz', '', 'Portugués', 4, 66, '007'),
+	  ('008', 'Hernán Darío Gómez', 'El Bolillo', 'Colombiana', 3, 63, '008'),
+	  ('009', 'Eduardo Berizzo Magnolo', 'Toto', 'Argentina', 9, 49, '009'),
+	  ('010', 'Oscar Washington Tabárez Sclavo', 'Maestro', 'Uruguaya', 5, 72, '010'),
+	  ('011', 'Hajime Moriyasu', 'Poichi', 'Japonesa', 7, 50, '011'),
+	  ('012', 'Félix Sánchez Bas', '', 'Española', 0,43, '012')
+GO
+
+--INSERT INTO EquiposEntrenador
+--VALUES('001', 'Veles Ariel', 'Argentina', 1, '001'),
+--      ('002', 'Universitario', 'Perú', 1, '001'),
+--	  ('003', 'Flamengo', 'Brasil', 1, '002')
+--GO
+
+INSERT INTO Estadio
+VALUES('001', 'Estadio Nacional del Perú', 'Estadio José Díaz', 'El estadio Nacional del Perú, denominado popularmente como estadio José Díaz2?, estadio Nacional de Lima3? o simplemente estadio Nacional, es un estadio multiusos ubicado en el barrio de Santa Beatriz, en el distrito de Lima, perteneciente a la región capital peruana del mismo nombre.', 'https://portal.andina.pe/EDPfotografia2/Thumbnail/2011/07/24/000161196W.jpg', '001', 0, 45, 10, '12 de julio de 1927', '43 086 espectadores', '105 × 68 m', 'Lima, Perú', '12°04'02?S 77°02'01?O', 'IPD'),
+      ('002', 'Estadio Monumental de la U', 'Monumental de Ate', 'El Estadio Monumental conocido popularmente como el Monumental de Ate o el Monumental de la «U» o simplemente el Monumental, es el estadio principal del Club Universitario de Deportes de la Primera División del Perú.', 'https://portal.andina.pe/EDPfotografia3/Thumbnail/2017/08/28/000445473W.jpg', '001', 0, 25, 2, '2 de julio de 2000', '80 093 espectadores', '105 × 70 m', 'Lima, Perú', '12°03?20?S 76°56?09?O', 'Club Universitario de Deportes'),
+	  ('003', 'Estadio Morumbi', 'Estadio Cícero Pompeu de Toledo', 'El primer campo oficial de Brasil inaugurado en 1896', 'https://e00-marca.uecdn.es/assets/multimedia/imagenes/2019/05/13/15577565976609.png','003',3, 3, 0, '2 de Octubre de 1960', '67 400 espectadores', '105 x 68 mts.', 'Sao Paulo (SP)', '23°36´00"S 46°43´13°O', 'Sao Paulo FC'),
+	  ('004', 'Arena Corinthians', 'N/A', 'Ubicado en el barrio de Itaquera, de Sao Paulo', 'https://media-cdn.tripadvisor.com/media/photo-s/0c/b5/8f/2b/arena-corinthians.jpg', '003', 0, 4, 0, '15 de Abril de 2014', '47 605 espectadores', '105 x 68 mts.', 'Sao Paulo (SP)', '23°32´42.9"S 46°28´27.4W', 'Corinthians')
+GO
+	
+--Jugadores
+Insert into Jugador(Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+ values ('101','Pedro', 'Gallese', 'Quiroz', 28, 'La Tarantula',47, 4, 0, 0, 0, 0, 1, 0, 0, 'Alianza Lima'           , 4,  1 , 2, 3, 2, 0, 0, 0, '23 de febrero de 1990', 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Palestino_-_Alianza_Lima_20190204_03.jpg', '001'),
+							('102','Carlos', 'Caceda', 'Ollaguez',27, 'La Pantera', 6, 0, 0, 0, 0, 0, 0, 0, 0, 'FBC Melgar'            ,  0,  1 , 1, 0, 0, 0, 0, 0,'27 de septiembre 1991', 'https://e.ad.amtv.pe/futbol-peruano-real-garcilaso-desmiente-fichaje-arquero-carlos-caceda-n336125-808x454-499348.jpg', '001'),
+							('103','Patricio', 'Álvarez', 'Noguera',25,'Pato'     ,0,  0, 0, 0, 0, 0, 0, 0, 0, 'Sporting Cristal'        ,0 , 12, 1, 0, 0, 0, 0, 0,'24 de enero de 1994', 'https://img.depor.com/files/article_video_image/uploads/2018/09/04/5b8f077a82ffb.jpeg', '001'),
+							('104','Aldo', 'Corzo', 'Chavéz', 30, 'El Colmillo' , 25 ,0, 0, 0, 0, 0, 0, 0, 0,'Universitario de Deportes', 20, 3,  0,  0, 0, 0, 0, 0,'20 de mayo de 1989 ', 'https://upload.wikimedia.org/wikipedia/commons/2/24/Aldo_Corzo_Universitario.jpg', '001'),
+							('105','Miguel ','Araujo', 'Blanco',24, 'Tití',     13,   0, 0, 0, 0, 0, 0, 0, 0,'Talleres Córdoba '        , 0 , 5,  0,  1 ,0, 0, 0, 0,'24 de octubre de 1994 ', 'https://tmssl.akamaized.net/images/portrait/originals/211420-1510316533.jpg', '001'),
+							('106','Luis ','Advíncula', 'Castrillón',29, 'Bolt', 75,   0, 0, 0, 0, 0, 0, 0, 0,'	Rayo Vallecano'          ,1, 17,  1,  1 ,0, 0, 0, 0,'2 de marzo de 1990   ', 'https://img.elcomercio.pe/files/article_content_ec_fotos/uploads/2018/07/28/5b5c7e5af208f.jpeg', '001'),
+							('107','Anderson','Santaría', 'Bardales',27,'La Muralla Peruana', 9, 0, 0, 0, 0, 0, 0, 0, 0,'Atlas F.C '    , 0 , 4,  0,  0 ,0, 0, 0, 0,'10 de enero de 1992  ', 'https://cdne.elbocon.pe/thumbs/uploads/img/2018/07/08/anderson-santamaria-2-equipos-estan-interesados-en-169701-jpg_600x0.jpg', '001'),
+							('108','Miguel', 'Trauco', 'Saavedra' ,26, 'El Mozo', 37,   0, 0, 0, 0, 0, 0, 0, 0,'	C. R. Flamengo '     , 14, 6, 0,  0 ,0, 0, 0, 0,'25 de agosto de 1992', 'https://cdne.diariocorreo.pe/thumbs/uploads/img/2019/05/06/miguel-trauco-despierta-interes-de-dos-equipos-885573-641484-jpg_604x0.jpg', '001'),
+							('109','Carlos','Zambrano',' Ochandarte',29, 'Kaiser',  43,   0, 0, 0, 0, 0, 0, 0, 0,'	F. C. Basilea '       , 3 , 5, 2, 1 ,2, 0, 0, 0,'10 de julio de 1989 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Carlos_Zambrano_2012_%28cropped%29.jpg/800px-Carlos_Zambrano_2012_%28cropped%29.jpg', '001'),
+							('110','Alexander',' Callens',' Asín',27, '',     10,   0, 0, 0, 0, 0, 0, 0, 0,'New York City FC'             , 1, 4, 0,  1 ,0, 0, 0, 0,'4 de mayo de 1992 ', 'https://e.rpp-noticias.io/normal/2018/06/09/250325_624518.jpg', '001'),							
+							('111','Renato',' Tapia', 'Cortijo',23, 'Cabezón',35,   3, 0, 0, 0, 0, 0, 0, 0,'Willem II'             , 3, 13, 2,  0 ,0, 0, 0, 0,'28 de julio de 1995  ', 'https://img.elcomercio.pe/files/article_content_ec_fotos/uploads/2018/03/07/5aa01b2022807.jpeg', '001'),
+							('112', 'Yoshimar', 'Yotún', 'Flores',29, 'Yoshi',83,   2, 0, 0, 0, 2, 0, 0, 0,'Cruz Azul'             , 2, 19, 0,  0 ,0, 0, 0, 0,'7 de abril de 1990 ', 'https://as01.epimg.net/us/imagenes/2018/12/28/futbol/1545956919_239420_1545957082_noticia_normal.jpg', '001'),
+							('113','Jesús', 'Pretell','Panta',20, '',     0,   0, 0, 0, 0, 0, 0, 0, 0,'Sporting Cristal'             , 0, 16, 0,  1 ,0, 0, 0, 0,'26 de marzo de 1999 ', 'https://cdne.elbocon.pe/redactor/uploads/2019/06/02/jesus-pretell-me-siento-preparado-para-estar-en-la-890016-501531_AkjKflf.jpg', '001'),
+							('114','Christofer', 'Gonzales',' Crespo',26, 'Canchita',  9, 5, 0, 0, 0, 0, 0, 0, 0,'Sporting Cristal'   , 22, 0, 2,  0 ,0, 0, 0, 0,'12 de octubre de 1992 ', 'https://depor.com/files/article_main/uploads/2019/01/13/5c3bafb63425b.jpeg', '001'),
+							('115','Edison', 'Flores',' Peralta',25, 'Orejas',  38,   2, 0, 0, 0, 2, 11, 0, 0,'	Monarcas MoreliaC'     ,32, 20, 0,  0 ,0, 0, 0, 0,'14 de mayo de 1994 ', 'https://pbs.twimg.com/media/DgOwk4sWAAAhvnb.jpg', '001'),
+							('116','Christian', 'Cueva',' Bravo',27, 'Aladino',   52, 3 , 0, 0, 0, 0, 2, 2, 0,'Santos'             , 8, 8, 0,  1 ,0, 0, 0, 0,'23 de noviembre de 1991', 'https://img.elcomercio.pe/files/article_content_ec_fotos/uploads/2018/06/16/5b25427d5b960.jpeg', '001'),
+							('117','Andy','Polo',' Andrade',24, 'Nene',     19,   3, 0, 0, 0, 0, 0, 0, 0,'	Portland Timbers'             , 25, 0, 0,  0 ,0, 0, 0, 0,'29 de septiembre de 1994', 'https://depor.com/files/article_main/uploads/2018/01/31/5a72064f900c7.jpeg', '001'),
+							('118','André', 'Carrillo',' Díaz ',27, 'La culebra',  55,  7, 0, 0, 0, 2, 1, 0, 0,'Al-Hilal'             , 6, 18, 0,  1 ,0, 0, 0, 0,'14 de junio de 1991  ', 'https://prod.media.libero.pe/660x378/libero/imagen/2018/11/18/noticia-1542573741-andre-carrillo.jpg', '001'),
+							('119','Paolo', 'Hurtado',' Huertas',28, 'Caballito',  30,   0, 0, 0, 0, 1, 0, 0, 0,'Konyaspor'             , 3, 7, 1,  1 ,0, 0, 0, 0,'27 de julio de 1990 ', 'https://img.depor.com/files/article_main/files/crop/uploads/2017/07/19/596f9058ca714.r_1508450199880.0-36-700-386.jpeg', '001'),
+							('121','Raúl','Ruidíaz',' Misitich',28, 'La Pulga', 36,   6, 0, 0, 0, 1, 1, 0, 0,'Seattle Sounders', 162	, 11, 3, 2 ,0, 0, 0, 2,'25 de julio de 1990 ', 'https://img.peru21.pe/files/article_content_ec_fotos/uploads/2017/08/29/59a61cd531b52.jpeg', '001'),
+							('122','Jefferson Agustín',' Farfán',' Guadalupe',34, 'La Foquita', 90,   15, 0, 0, 0, 1, 1, 0, 0,'Lokomotiv Moscú', 34, 10, 2, 0 ,0, 0, 0, 2,'26 de octubre de 1984', 'https://www.elpopular.pe/sites/default/files/styles/img_620x465/public/imagen/2019/03/24/Noticia-233072-jefferson-farfan-ivana-yturbe-mario-irivarren-yahaira-plasencia-youtube-wasap-jb.jpg?itok=9w8hBrdo', '001')
+GO						
+
+--Insert capitanes
+INSERT INTO Jugador 
+VALUES('120','Paolo', 'Guerrero',' Gonzales',35, 'El Depredador', 91,   15, 0, 0, 0, 3, 11, 4, 0,'S. C. Internacional', 271, 9, 2, 2 ,0, 0, 0, 17,'1 de enero de 1984 ', 'https://img.elcomercio.pe/files/article_content_ec_fotos/files/crop/uploads/2018/05/31/5b0ff0196a3af.r_1527824832867.0-66-1241-779.jpeg', '001', 'SI'),
+	  ('125','Gary',' Medel', 'Soto ',31, 'Pitbull', 118,  3, 0, 1, 0, 0, 1, 25, 1,'Besiktas JK', 36,17,0, 0 ,1, 0, 0, 0,'3 de agosto de 1987', 'https://as01.epimg.net/chile/imagenes/2017/01/26/futbol/1485436168_571641_1485436493_noticia_normal.jpg', '002','SI'),
+	  ('144','Neymar',' da Silva Santos ','Júnior ',27, '', 96,  3, 3, 0, 0, 0, 3, 1, 0,'París Saint-Germain', 293,10, 2, 1 ,3, 0, 0, 0,'5 de febrero de 1992 ', 'https://www.foxsportsasia.com/tachyon/2019/05/neymar-cropped_1kltrzmho5v1w1oy7c091pbrq6.jpg?fit=1024,576', '003','SI'),
+	  ('145','Carlos',' Lampe',' Porras  ',32, 'Carlos Lumpen', 23,  1, 0, 0, 0, 0, 0, 0, 0,'Jugador Libre', 0, 1, 0, 0 ,0, 0, 0, 0,'17 de marzo de 1987 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Colo_Colo_-_Huachipato%2C_2018-03-03_-_Carlos_Lampe_-_03.jpg/800px-Colo_Colo_-_Huachipato%2C_2018-03-03_-_Carlos_Lampe_-_03.jpg', '004','SI'),
+	  ('164','Salomón',' Rondón',' Giménez ',29, 'La Bestia', 71, 8, 0, 0, 0, 0, 4, 0, 0,'Newcastle United F. C.', 146,9, 1, 1 ,3, 0, 0, 1,'16 de septiembre de 1989 ', 'https://img.depor.com/files/article_main/uploads/2019/04/19/5cba7457e9cb9.jpeg', '005','SI'),
+	  ('176','Lionel Andrés',' Messi',' Cuccittini',31, 'La Pulga', 129,  34, 2, 0, 2, 0, 4, 0, 0,'F. C. Barcelona', 417,10, 8, 0 ,0, 0, 0, 6,'24 de junio de 1987 ', 'http://www.fichajes.com/foto/a/lionel-messi-se-ha-sincerado-sobre-varias-cuestiones_149888.jpg', '006','SI'),
+	  ('701','David','Ospina','Ramirez',30,'..',9,8,0,0,0,1,0,0,0,'Arsenal F. C',0,1,15,0,1,0,0,2,'31 de agosto de 1988','https://i.pinimg.com/originals/2f/8a/e2/2f8ae213c917f6826f03dbd318d00292.jpg','007','SI'),
+	  ('805','Jose','Quintero','Ordoñez',28,'Choclo',0,1,0,0,0,0,0,0,0,'Liga de Quito',1,14,5,0,6,0,0,0,'20 de junio de 1990','https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Jos%C3%A9_Quintero_2016.JPG/800px-Jos%C3%A9_Quintero_2016.JPG','008','SI'),
+	  ('903','Antony','Silva','Cano',35,'La Moña',2,0,0,0,0,0,0,0,0,'Huracan',0,1,5,0,0,0,0,0,'27 de febrero de 1984','http://www.deportestolima.com.co/wp-content/uploads/2011/04/anthony%20silva.jpg','009','SI'),
+	  ('1004','Diego','Godin','Leal',33,'El Faraon',7,9,0,1,0,0,1,0,0,'Atlético de Madrid',39,3,10,0,26,0,0,3,'16 de febrero de 1986 ','https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Diego_God%C3%ADn_2018_%28cropped%29.jpg/245px-Diego_God%C3%ADn_2018_%28cropped%29.jpg','010','SI'),
+	  ('1101','Eiji','Kawashima','-',36,'..',0,2,0,0,0,0,0,0,0,'RC Estrasburgo',0,1,5,0,0,0,0,0,'20 de marzo de 1983','https://upload.wikimedia.org/wikipedia/commons/1/1f/Eiji_Kawashima_2018.jpg','011','SI'),
+	  ('1206','Almahdi','Ali','Mukhtar',27,'..',0,2,0,0,0,0,0,0,0,'Al-Gharafa',3,4,5,0,4,0,0,0,'2 de marzo de 1992','https://www.gulfcup.sa/photos/player_73.jpg','012','SI')
+GO
+
+Insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values('123','Brayan','Cortés',' Fernández ',24, 'Indio', 2,  2, 0, 0, 0, 0, 0, 0, 0,'Colo Colo', 0, 1, 0, 0 ,0, 0, 0, 0,'11 de marzo de 1995', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Uni%C3%B3n_La_Calera_-_Colo-Colo_20190506_35.jpg/250px-Uni%C3%B3n_La_Calera_-_Colo-Colo_20190506_35.jpg', '002'),
+						  ('124','Sebastián','Vegas','Orellana',22, '', 5,  1, 0, 0, 0, 0, 0, 0, 0,'Monarcas Morelia',1, 19,0, 0 ,0, 0, 0, 0,'4 de diciembre de 1996', 'https://as01.epimg.net/img/comunes/fotos/fichas/deportistas/s/seb/large/27176.png', '002'),					  
+						  ('126','Mauricio',' Isla','Isla',24, 'Huaso Isla', 107, 9, 0, 1, 0, 0, 1, 0, 0,'Fenerbahçe',10, 4,2, 1 ,2, 0, 0, 0,'12 de junio de 1988', 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Mauricio_Isla_-_Spain_vs._Chile%2C_10th_September_2013_%28cropped%29.jpg/250px-Mauricio_Isla_-_Spain_vs._Chile%2C_10th_September_2013_%28cropped%29.jpg', '002'),
+						  ('127','Arturo',' Vidal',' Pardo ',32, 'El Rey Arturo', 107, 25, 0, 2, 0, 0, 0, 0, 0,'F. C. Barcelona', 133, 8, 3, 1 ,3, 0, 0, 0,'22 de mayo de 1987', 'https://www.corazon.cl/wp-content/uploads/2019/06/arturo-vidal-2.jpg', '002'),
+						  ('128','Jean','Meneses',' Villarroel',26, 'Pulga', 0,  1, 0, 0, 0, 0, 0, 0, 0,'CLub Leòn', 20, 16, 0, 0 ,0, 0, 0, 0,'16 de marzo de 1993', 'https://as01.epimg.net/mexico/imagenes/2018/08/01/futbol/1533155201_852451_1533155549_noticia_normal.jpg', '002'),
+						  ('129','Charles',' Aránguiz', 'Sandoval ',30, 'El Principe', 69, 13, 0, 0, 0, 0, 0, 0, 0,'Bayer 04 Leverkusen', 75, 20, 1, 0 ,2, 0, 0, 0,'17 de abril de 1989 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Chile_-_Germany_%282%29.jpg/250px-Chile_-_Germany_%282%29.jpg', '002'),
+						  ('130','Diego','Valdés',' Contreras ',25, ' ', 10,  0, 0, 0, 0, 0, 0, 0, 0,'	Santos Laguna', 1, 10, 0, 0 ,0, 0, 0, 0,'30 de enero de 1994', 'https://3.bp.blogspot.com/-9DDQeFLTCnI/W8evwQYNQCI/AAAAAAAAR9E/E25IEvi4sAIF5lRpDcfF38vc2gd6jwiGwCLcBGAs/s400/diego-valdes-chile-2018-mexico-16-octubre.jpg', '002'),
+						  ('131','Alexis','Sánchez', 'Sánchez',30, 'Niño Maravilla', 124,  17, 0, 1, 0, 0, 5, 4, 0,	'Manchester United F.C.', 230, 7, 0, 1 ,0, 0, 0, 0,'19 de diciembre de 1988', 'https://media.metrolatam.com/2019/05/30/ps256860-abce3779a4c7e7a5ae6cb5e3ee48265d-600x400.jpg', '002'),
+						  ('132','Eduardo','Vargas',' Rojas ',29, 'Edu', 82,  17, 0, 1, 0, 0, 10, 2, 0,'Tigres UANL', 152, 11, 3, 0 ,0, 0, 0, 0,'20 de noviembre de 1989', 'https://static.t13.cl/images/sizes/1200x675/1555815035-image-2019-04-20-6.jpg', '002'),
+						  ('133','Nicolás',' Castillo',' Mora ',26, '', 20,  6, 0, 1, 0, 0, 0, 0, 0,'Club América', 102,9, 0, 0 ,0, 0, 0, 0,'14 de febrero de 1993 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Nicol%C3%A1s_Castillo_%282016%29_%28cropped%29.jpg/250px-Nicol%C3%A1s_Castillo_%282016%29_%28cropped%29.jpg', '002')
+GO
+
+insert into Jugador  (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values('134','Alisson',' Ramses',' Becker ',26, '', 34,  7, 0, 0, 0, 0, 0, 0, 0,' Liverpool F.C.',0,1, 0, 0 ,0, 0, 0, 0,'2 de octubre de 1992 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/20180610_FIFA_Friendly_Match_Austria_vs._Brazil_850_1625.jpg/800px-20180610_FIFA_Friendly_Match_Austria_vs._Brazil_850_1625.jpg', '003'),
+						   ('135','Daniel', 'Alves ','da Silva',36, '', 109,  1, 0,0, 0, 0, 1, 0, 0,'París Saint-Germain', 66,2, 0, 0 ,0, 0, 0, 0,'6 de mayo de 1983  ', 'https://upload.wikimedia.org/wikipedia/commons/f/f6/2015_UEFA_Super_Cup_107_%28cropped%29.jpg', '003'),
+						   ('136','Alex',' Lobo',' Silva ',28, '', 12, 21 , 0, 0, 0, 0, 0, 0, 0,     'Juventus F. C.', 1,12, 0, 0 ,0, 0, 0, 0,'26 de enero de 1991 ', 'https://images.cdn.fourfourtwo.com/sites/fourfourtwo.com/files/alex-sandro_v3mijejoy7ys1mx2abtuunw3e.jpg', '003'),
+						   ('137','Filipe',' Luís',' Kasmirski ',33, '', 38,  12, 2, 0, 0, 0, 0, 0, 0,'Atlético de Madrid',22, 0, 2, 0 ,0, 0, 0, 0,'9 de agosto de 1985', 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Filipe_Lu%C3%ADs_2018.jpg', '003'),
+							('138','Thiago',' Emiliano','da Silva',34, '', 77,  25, 1, 0, 1, 1, 1, 0, 1,'París Saint-Germain', 37,2, 2, 0 ,1, 0, 0, 0,'29 de septiembre de 1984 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/20180610_FIFA_Friendly_Match_Austria_vs._Brazil_Thiago_Silva_850_1582.jpg/800px-20180610_FIFA_Friendly_Match_Austria_vs._Brazil_Thiago_Silva_850_1582.jpg', '003'),
+							('139','Philippe',' Coutinho','Correia',27, 'Cou', 47,  6, 11, 0, 0, 0, 0, 0, 0,'Fútbol Club Barcelona', 90,11,4, 0 ,0, 0, 0, 0,'12 de junio de 1992  ', 'https://e00-marca.uecdn.es/assets/multimedia/imagenes/2019/05/31/15592902097330.jpg', '003'),
+							('140','Fernando','Luiz' ,'Rosa ',34, 'El Calvito', 49,  2, 1, 0, 0, 0, 0, 0, 0,'	Manchester City',73,5, 0, 0 ,0, 0, 0, 0,'4 de mayo de 1985 ', 'https://i2.esmas.com/sef/img/player/photo-profile/fernandinho300x350.jpg', '003'), 
+							('141','Arthur',' Ramos ',' de Oliveira Melo ',22, '', 8, 6, 0, 1, 0, 0, 0, 0, 0,'F.C. Barcelona', 6,8, 1, 0 ,0, 0, 0, 0,'12 de agosto de 1996 ', 'http://www.meridiano.com.ve/fotos_meridiano/1520549068592227442.jpg', '003'),
+							('142','Lucas','Tolentino ','Coelho de Lima',21, '', 4,  6, 0, 1, 0, 0, 0, 0, 0,'A. C. Milan', 18,39, 0, 0 ,0, 0, 0, 0,'27 de agosto de 1997 ', 'https://www.ceroacero.es/wimg/p479643g/lucas-paqueta.jpg', '003'),
+							('143','David',' Neres ','Campos ',22, '', 1,  2, 0, 0, 0, 0, 0, 0, 0,'Ajax de Ámsterdam', 35,7, 0, 0 ,0, 0, 0, 0,'3 de marzo de 1997 ', 'https://i.ytimg.com/vi/V0qhLXvYHeM/maxresdefault.jpg', '003')					
+GO
+
+SELECT * FROM Jugador WHERE CapitanSeleccion = 'SI'
+GO
+
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo) 
+values ('146','Diego','Bejarano',' Ibañez ',27, '', 33,  5, 0, 0, 0, 0, 0, 0, 0,'Bolívar', 2,0, 0, 0 ,0, 0, 0, 0,'24 de agosto de 1991 ', 'https://upload.wikimedia.org/wikipedia/commons/b/be/Diego_Bejarano.jpg', '004'),
+							('147','Marvin','Bejarano',' Jiménez ',31, '', 33,  2, 0, 0, 0, 0, 0, 0, 0,'The Stronges', 0,0, 0, 0 ,0, 0, 0, 0,'6 de marzo de 1988 ', 'http://www.revista-cabala.com/wp-content/uploads/2017/06/MARVIN.jpg', '004'),
+							('148','Luis',' Fernando',' Haquin ',21, 'El Faraón', 3,  0, 0, 0, 0, 0, 0, 0, 0,'Club Puebla', 3, 4, 0, 0 ,0, 0, 0, 0,'15 de noviembre de 1997 ', 'https://img.vavel.com/luishaquin-diez-jpg-1995527733-1545178819971.jpg', '004'),
+							('149','Paul',' Arano',' Ruiz ',24, '', 0, 0 , 0, 0, 0, 0, 0, 0, 0,'	Blooming',0 ,0, 0,0 ,0, 0, 0, 0,'23 de febrero de 1995 ', 'https://www.diez.bo/export/sites/eldeber/img/2018/09/03/paularanodiez23.jpg_692512063.jpg', '004'),
+							('150','Alejandro',' Chumacero',' Bracamonte ',28, 'Chumasteiger', 32,  4, 0, 0, 0, 0, 0, 0, 0,'Puebla', 77,3, 0, 0 ,0, 0, 0, 1,'22 de abril de 1991  ', 'http://www.la-razon.com/marcas/Alejandro-Chumacero-Bracamonte_LRZIMA20161025_0028_11.jpg', '004'),
+							('151','Samuel',' Galindo',' Suheiro ',30, 'Búho', 7,  1, 0, 0, 0, 0, 0, 0, 0,'Club Always Ready', 11,17, 0, 0 ,0, 0, 0, 0,'18 de abril de 1989  ', 'https://lugoslavia.gal/wp-content/uploads/2016/05/galindo-1170x658.jpg', '004'),
+							('152','Erwin','Saavedra',' Flores',23, '',23,  5, 0, 0, 0, 0, 0, 0, 0,'Bolívar', 14,23, 2, 1 ,3, 0, 0, 0,'22 de febrero de 1996', 'https://3.bp.blogspot.com/-7d-mUdMygg8/Vt3MbjDkI6I/AAAAAAAAAf8/E_ReLHOCXXg/s1600/nota-saavedra.jpg', '004'),
+							('153','Gilbert',' Alvarez ','',27, '', 9,  1, 0, 0, 0, 0, 0, 0, 0,'	Wilstermann', 15,11, 0, 0 ,0, 0, 0, 0,'07 de abril de 1992 ', 'http://www.la-razon.com/marcas/Alvarez-Wilstermann-Foto-Archivo-APG_LRZIMA20180820_0063_11.jpg', '004'),
+							('154','Henry',' Vaca',' Urquiza ',21, '', 0,  0, 0, 0, 0, 0, 0, 0, 0,' The Strongest', 6,0, 0, 0 ,0, 0, 0, 0,'27 de enero de 1998 ', 'http://www.la-razon.com/marcas/Henry-Vaca-partido-Foto-Razon_LRZIMA20170621_0028_14.jpg', '004'),
+							('155','Marcelo',' Moreno',' Martins ',31, 'Matador', 70,  8, 0, 0, 0, 0, 2, 0, 0,'Shijiazhuang Ever Bright', 147,9, 2, 1 ,3, 0, 0, 2,'18 de junio de 1987 ', 'https://img.peru21.pe/files/article_content_ec_fotos/files/crop/uploads/2017/09/01/59a9791ca1381.r_1504282819121.0-67-700-468.jpeg', '004')	
+GO
+
+insert into Jugador(Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)  
+values ('156','Wuilker','Faríñez',' Aray  ',21, '', 12,  2, 0, 0, 0, 0, 2, 0, 0,' Millonarios',0,1, 0, 0 ,0, 0, 1, 0,'15 de febrero de 1998  ', 'https://deportesimagenes.canalrcn.com/ImgDeportes/farinezmillcov111_1.jpg?null', '005'),
+							('157','Yordan ',' Osorio','Paredes ',25, '', 8,  1, 0, 0, 0, 0, 0, 0, 0,'Vitória Guimarães', 8,3, 0, 0 ,0, 0, 0, 0,'10 de mayo de 1994 ', 'https://c8.alamy.com/comp/T1ANK2/madrid-spain-credit-d-22nd-mar-2019-yordan-osorio-paredes-ven-footballsoccer-international-friendly-soccer-match-between-argentina-1-3-venezuela-at-wanda-metropolitano-stadium-in-madrid-spain-credit-d-nakashimaafloalamy-live-news-T1ANK2.jpg', '005'),
+							('158','Jhon','Chancellor ','Cedeño ',27, '', 9,  1, 0, 0, 0, 0, 0, 0, 0,' Al-Ahli Doha', 15,13, 1, 1 ,7, 0, 0, 0,'2 de enero de 1992 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Jhon_Chancellor_2018.jpg/245px-Jhon_Chancellor_2018.jpg', '005'),
+							('159','Ronald','Hernández',' Pimentel',21, 'Ronita', 1,  3, 1, 0, 0, 1, 0, 0, 0, 'Stabæk IF', 0,6, 2, 1 ,3, 0, 0, 2,'4 de octubre de 1997', 'http://www.balonazos.com/wp-content/uploads/2017/08/ronald-hernandez-0801.jpg', '005'),
+							('160','Roberto','Rosales',' Altuve  ',30, '', 67,  6, 0, 0, 2, 0, 0, 0, 0,'RCD Español', 10,16, 1, 1 ,2, 0, 0, 0,'20 de noviembre de 1988 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Roberto_Rosales_2015.jpg/800px-Roberto_Rosales_2015.jpg', '005'),
+							('161','Junior',' Moreno',' Borrero',25, '', 13,  5, 0, 0, 0, 0, 0, 0, 0,'DC United', 1,0, 0, 0 ,0, 0, 0, 0,'20 de julio de 1993 ', 'https://as01.epimg.net/us/imagenes/2018/02/07/futbol/1518038724_221781_1518038911_noticia_normal.jpg', '005'),
+							('162','Luis',' Manuel',' Sejas  ',32, '', 67,  5, 2, 0, 0, 0, 0, 0, 0,'Independiente Santa Fe', 51,13, 1, 1 ,3, 0, 0, 1,'23 de junio de 1986 ', 'https://files.rcnradio.com/public/styles/image_834x569/public/2018-06/seijas_santa_fe_colprensa_0.jpg?itok=ao9l647v', '005'),
+							('163','Jhon',' Murillo',' Romaña ',23, '', 13,  1, 0, 0, 0, 0, 0, 0, 0,'C. D. Tondela', 27,15, 0, 1 ,2, 0, 0, 1,'4 de junio de 1995  ', 'http://correiodevenezuela.com/espanol/wp-content/uploads/2018/07/murillo-738-700x357.jpg', '005'),						
+							('165','Josef',' Martínez',' Mencia ',26, '', 70,  0, 0, 0, 0, 0, 1, 0, 0,'	Atlanta Unitedt', 101,17, 2, 1 ,3, 0, 0, 1,'19 de mayo de 1993 ', 'https://eltiempo.com.ve/wp-content/uploads/2019/06/josef.jpg', '005'),
+							('166','Fernando','Aristeguieta',' de Luca',27, 'El Colorado', 15,  4, 0, 0, 0, 0, 0, 0, 0,'América de Cali', 101,9, 2, 1 ,2, 0, 0, 1,'9 de abril de 1992 ', 'https://files.antena2.com.co/antena2/public/styles/imagen_despliegue/public/2018-09/América-Aristeguieta-1260_3_0.jpg?itok=gbyfpMzu', '005')
+GO
+
+Insert Into Jugador(Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)  
+values ('167','Franco',' Armani','',32, 'El Pulpo', 4,  21, 1, 0, 0, 0, 0, 0, 0,'River Plate', 0,1, 2, 0 ,0, 0, 0, 1,'16 de octubre de 1986 ', 'https://bolavip.com/__export/1546458698533/sites/bolavip/img/2019/01/02/gettyimages-1084374066_crop1546458697412.jpg_1693159006.jpg', '006'),
+							('168','Renzo ','Saraviaa','' ,25, '', 3, 1, 0, 0, 0, 0, 0, 0, 0,'Racing Club', 0,4, 1, 0 ,0, 0, 0, 0,'16 de junio de 1993 ', 'http://www.lacomuderacing.com/wp-content/uploads/2019/06/Vienen-por-Renzo-Saravia-773x380.jpg', '006'),
+							('169','Nicolás',' Otamendi','' ,31, '', 53,  0, 2, 0, 2, 0, 1, 0, 0,'Manchester City',38,17, 1, 0 ,0, 0, 0, 0	,'12 de febrero de 1988', 'https://www.infobae.com/new-resizer/BOZpL89HFtBe9c1G3MLwluESKl8=/750x0/filters:quality(100)/s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/06/11163707/Entrenamiento-abierto-Seleccion-Argentina-11-de-junio-7.jpg', '006'),
+							('170','Germán', 'Pezzella','',27, 'Liebre', 7,  6, 0, 0, 1, 0, 0, 0, 0,'Fiorentina', 12,6, 1, 0 ,0, 0, 0, 0,'27 de junio de 1991  ', 'https://cdn.vox-cdn.com/thumbor/6jBo938Uck6nsLHwd6_kzIyWlwY=/0x0:3000x1998/1200x800/filters:focal(1049x241:1529x721)/cdn.vox-cdn.com/uploads/chorus_image/image/59893763/948341534.jpg.0.jpg', '006'),
+							('171','Ángel',' Di María ','Hernánde',31, 'El Fideo', 97,  1, 2, 0, 2, 0, 4, 0, 0,'París Saint-Germain', 130,11, 4, 0 ,2, 0, 0, 0,'14 de febrero de 1988', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/NIG-ARG_%285%29.jpg/250px-NIG-ARG_%285%29.jpg', '006'),
+							('172','Giovani' ,'Lo Celso','',23, 'Monito', 12,  7, 0, 0, 0, 0, 0, 0, 0,'Real Betis Balompiéi', 27,9, 0, 0 ,0, 0, 0, 0,'9 de abril de 1996  ', 'https://pbs.twimg.com/profile_images/1073739029802307586/Nl8hiWq__400x400.jpg', '006'),
+							('173','Iván',' Marcone','',29, 'El Capo', 1,  8, 0, 0, 0, 0, 0, 0, 0,'	Boca Juniors', 2,13, 0, 0 ,0, 0, 0, 0,'03 de junio de 1990 ', 'https://vamoscruzazul.bolavip.com/__export/1559579649045/sites/bolavip/img/2019/06/03/jam_a_77758_crop1559579635535.jpg_1693159006.jpg', '006'),
+							('174','Roberto',' Maximiliano',' Pereyra ',28 ,'El Tucumano', 15,  5, 1, 0, 1, 0, 0, 0, 0,'Watford F. C.', 27,0, 0, 0 ,0, 0, 0, 0,'7 de enero de 1991 ', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Serie_A_2014-15_-_Juventus_v_Napoli_-_Roberto_Pereyra.jpg/220px-Serie_A_2014-15_-_Juventus_v_Napoli_-_Roberto_Pereyra.jpg', '006'),
+							('175','Paulo',' Dybala','',25, 'La Joya', 19,  10, 0, 0, 0, 0, 0, 0, 0,'Juventus F.C.', 117,21, 1, 0 ,2, 0, 0, 2,'15 de noviembre de 1993', 'https://cdn.tn.com.ar/sites/default/files/styles/1366x765/public/2019/05/29/dybala_ap.jpg', '006'),						
+							('177','Sergio', 'Agüero',' ',31, 'El Kun', 89,  3, 2, 0, 2, 0, 7, 0, 0,'Manchester City', 404,9, 2, 1 ,2, 0, 0, 4,'2 de junio de 1988 ', 'https://images.clarin.com/2019/05/30/aguero-hablo-de-todos-los___6_YQM9uEF_1256x620__1.jpg', '006')
+GO
+
+SELECT * FROM PaisEquipo
+SELECT * FROM Jugador
+GO
+
+--Colombia
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values ('702','Camilo','Vargas','Gil',30,'..',0,0,0,0,0,0,0,0,0,'Deportivo Cali',0,12,10,0,2,0,0,0,'9 de marzo de 1989','https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Camilo_vargas.jpg/170px-Camilo_vargas.jpg','007'),
+						   ('703','Alvaro','Montero','Perales',24,'El Guajiro',0,0,2,0,0,0,0,0,0,'Deportes Tolima',0,23,5,0,2,0,0,0,'29 de marzo de 1995 ','https://i.ytimg.com/vi/sCLSHHioeKc/hqdefault.jpg','007'),
+						   ('704','Davinson','Sanchez','Mina',22,'..',0,1,2,0,0,0,0,0,0,'Tottenham Hotspur',9,23,15,0,5,0,0,0, '12 de junio de 1996','https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/FWC_2018_-_Round_of_16_-_COL_v_ENG_-_D_S%C3%A1nchez.jpg/320px-FWC_2018_-_Round_of_16_-_COL_v_ENG_-_D_S%C3%A1nchez.jpg','007'),
+						   ('705','Yerry','Mina','Gonzales',24,'La Máquina',2,5,0,0,0,0,0,0,0,'Everton F. C.',28,13,10,0,3,0,0,0,'23 de septiembre de 1994','https://fcbarcelona-static-files.s3.amazonaws.com/fcbarcelona/photo/2018/07/11/39b2afda-faf5-4f99-b961-b781f8bee9ef/CfCpAvTy.jpg','007')
+GO
+
+--Ecuador
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values ('801','Alexander','Dominguez','Carabali',31,'El Flaco',3,6,0,0,0,0,0,0,0,'Vélez Sarsfield',0,1,5,0,0,0,0,0,'5 de junio de 1987','https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Ecuador_tren2015_%283%29.jpg/320px-Ecuador_tren2015_%283%29.jpg','008'),
+						   ('802','Maximo','Banguera','Valdivieso',33,'MB1',0,2,0,0,0,0,0,0,0,'Barcelona S.C.',0,12,5,0,2,0,0,0,'16 de diciembre de 1985','http://p7s5h3q6.stackpathcdn.com/wp-content/uploads/2017/09/Bangue.jpg','008'),
+						   ('803','Pedro','Ortiz','Angulo',29,'Candado',0,0,0,0,0,0,0,0,0,'Delfín SC',0,23,5,0,0,0,0,0,'19 de febrero de 1990','https://especiales.elcomercio.com/cms_inter/pictures/opcion/1712121619435491513113583.jpg','008'),
+						   ('804','Pedro','Velasco','Arboleda',25,'El Pichon',0,2,1,0,0,0,0,0,0,'Barcelona S.C.',12,31,10,0,1,0,0,0,'31 de agosto de 1988','https://radiohuancavilca.com.ec/wp-content/uploads/2018/01/VELASCO-barcelona-pedr-pablo.jpg','008')					   
+GO
+
+--Paraguay
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values ('901','Alfredo','Ariel','Aguilar',30,'Santani',0,0,0,0,0,0,0,0,0,'Club Olimpia',0,22,5,0,0,0,0,0,'18 de julio de 1988','https://tmssl.akamaized.net//bilder/spielerfotos/s_160133_11855_2010_1.jpg?lm=0','009'),
+						   ('902','Roberto','Fernandez','Torres',31,'Gatito',0,0,0,0,0,0,0,0,0,'Botafogo',0,12,5,0,4,0,0,0,'29 de marzo de 1988','http://www.footballtop.com/sites/default/files/styles/player_full/public/photos/players/roberto_hunior_fernandes_0.jpg?itok=N19VhCzR','009'),						   
+						   ('904','Fabian','Balbuena','Gonzales',27,'The General',0,1,0,0,0,1,0,0,0,'West Ham United',0,4,10,0,2,0,0,0,'23 de agosto de 1991','https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Fabi%C3%A1n_Balbuena.jpg/245px-Fabi%C3%A1n_Balbuena.jpg','009'),
+						   ('905','Gustavo','Gomez','Portillo',26,'..',0,3,0,0,0,0,0,0,2,'Palmeiras',0,15,10,0,1,0,0,0,'6 de mayo de 1993','https://tmssl.akamaized.net//images/portrait/header/215390-1474297819.jpg?lm=1474297831','009')
+GO
+
+
+--Uruguay
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values ('1001','Fernando','Musleta','Micol',32,'Nando',13,16,0,1,0,0,0,0,0,'Galatasaray',1,1,5,0,2,0,0,0,'16 de junio de 1986','ññ','010'),
+						   ('1002','Martin','Silva','Leites',36,'Superman',0,1,1,1,0,0,0,0,0,'Libertad',0,23,5,0,1,0,0,0,'25 de marzo de 1983','https://upload.wikimedia.org/wikipedia/commons/2/25/Martin_Silva_cropped.jpg','010'),
+						   ('1003','Martin','Campaña','Delgado',30,'Campi',0,1,0,0,0,0,0,0,0,'Club Atlético Independiente',0,12,5,0,2,0,0,0,'29 de mayo de 1989','https://www.diariodopeixe.com.br/wp-content/uploads/2019/01/WhatsApp-Image-2019-01-03-at-14.24.56-280x300.jpeg','010'),					   
+						   ('1005','Jose Maria','Gimenez','De Vargas',24,'..',7,4,1,0,0,0,1,0,0,'Atlético de Madrid',9,2,10,0,17,0,0,2,'20 de enero de 1995','https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Jos%C3%A9_Mar%C3%ADa_Gim%C3%A9nez.jpg/245px-Jos%C3%A9_Mar%C3%ADa_Gim%C3%A9nez.jpg','010')
+GO
+
+--Japon
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values ('1102','Ryosuke','Kojima','-',22,'..',0,0,0,0,0,0,0,0,0,'Oita Trinita',0,12,0,0,0,0,0,0,'30 de enero de 1997','https://media.gettyimages.com/photos/ryosuke-kojima-of-japan-during-the-u19-international-friendly-match-picture-id497793638?s=612x612','011'),
+						   ('1103','Keisuke','Osako','-',19,'..',0,0,0,0,0,0,0,0,0,'Sanfrecce Hiroshima',0,23,0,0,0,0,0,0,'28 de julio de 1999','http://www.jfa.jp/national_team/inc/member/samuraiblue/osako_keisuke.jpg','011'),
+						   ('1104','Daiki','Sugioka','-',20,'..',0,2,0,0,0,0,0,0,0,'Shonan Bellmare ',3,2,0,0,2,0,0,0,'8 de setiembre de 1998','https://media.gettyimages.com/photos/daiki-sugioka-of-japan-during-the-fifa-u20-world-cup-korea-republic-picture-id689249916?s=612x612','011'),
+						   ('1105','Ko','Itakura','-',22,'..',0,1,0,0,0,0,0,0,0,'F. C. Groningen',2,4,0,0,0,0,0,0,'27 de enero de 1997','https://tmssl.akamaized.net//images/portrait/header/355816-1547499503.jpg?lm=1547499525','011')
+GO
+
+
+--Qatar
+insert into Jugador (Id,Nombre,ApePaterno,ApeMaterno,Edad,Apodo,Participaciones,Titulos, SubCampeonatos,MedallasOro,MedallasPlata,MedallasBronce,GolesEnCopaAmerica,Asistencias,
+	Autogoles,ClubActual,GolesCarrera,NumCamisetaSeleccion,NumLesiones,TotalTarjetasRojas,TotalTarjetasAmarrilla,TarjetasRojasActual,TarjetasAmarrillasActual,
+	MejorJugador,FechaNacimiento,Foto,IdPaisEquipo)
+values ('1201','Saad Abdullah','Al','Sheeb',29,'..',0,3,0,0,0,0,0,0,0,'Al Sadd',0,1,5,0,1,0,0,0,'19 de febrero de 1990','https://upload.wikimedia.org/wikipedia/commons/9/92/Saad_Al_Sheeb.jpg','012'),
+						   ('1202','Yousof','Ali','Ramirez',20,'..',0,0,0,0,0,0,0,0,0,'Al-Duhail',0,21,0,0,0,0,0,0,'31 octubre de 1999','..','012'),
+						   ('1203','Mohammed','Al-Bakari','-',22,'..',0,0,0,0,0,0,0,0,0,'Al-Khor',0,22,0,0,1,0,0,0,'28 de marzo de 1997','https://media.gettyimages.com/photos/goalkeeper-mohammed-al-bakari-of-qatar-during-the-afc-u23-china-2018-picture-id1012278686?s=612x612','012'),
+						   ('1204','Pedro','Carvalho','Correia',28,'..',0,1,0,0,0,0,0,0,0,'Al Sadd',2,2,5,0,4,0,0,0,'6 de agosto de 1990','https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/R%C3%B3-R%C3%B3%2C_Qatar_v_Japan_%E2%80%93_AFC_Asian_Cup_2019_final_29_%28crop%29.jpg/220px-R%C3%B3-R%C3%B3%2C_Qatar_v_Japan_%E2%80%93_AFC_Asian_Cup_2019_final_29_%28crop%29.jpg','012'),
+						   ('1205','Abdelkarim','Al Haj','Fadlalla',25,'..',0,6,0,0,0,0,0,0,0,'Al Sadd',38,3,5,0,3,0,0,0,'28 de agosto de 1993','https://upload.wikimedia.org/wikipedia/commons/9/95/Abdelkarim_Hassan_2019_AFC_Asian_Cup_Final.jpg','012')						   
+GO
+                           
+-- PartidoFinal
+    insert into PartidoFinal values('001', '001', 'Aléxis Sánchez', 4, 1, 'Chile', 'Argentina', 'Copa América Chile 2015', 68900,'Wilmar Rondán'),
+								   ('002', '002', 'Lionel Messi', 2, 0, 'Urugüay', 'Paragüay', 'Copa América Argentina 2011', 65921,'Salvio Fagundes'),
+                                   ('003', '002', 'Robinho', 3, 0, 'Brasil', 'Argentina', 'Copa América Venezuela 2007', 44000,'Carlos Amarilla'),
+                                   ('004', '002', 'Víctor Aristizábal', 1, 0, 'Colombia', 'México', 'Copa América Colombia 2001', 48600,'Ubaldo Aquino'),
+                                   ('005', '001', 'Ronaldo',0, 3, 'Urugüay', 'Brasil', 'Copa América Paragüay 1999', 30000,'Óscar Ruiz')
+	go
+                                   
+-- EquiposEntrenador --
+	insert into EquiposEntrenador values('001', 'Club Atlético Talleres de Córdoba', 'Argentina', 1, '001'),
+										('002', 'Universitario de Deportes', 'Perú', 1, '001'),
+										('003', 'Vélez Sarsfield', 'Argentina', 1, '001'),
+                                        ('004', 'América de Cali', 'Colombia', 1, '001'),
+                                        ('005', 'Selección Juvenil de Colombia', 'Colombia', 1, '002'),
+                                        ('006', 'Independiente de Medellín', 'Colombia', 1, '002'),
+                                        ('007', 'Atlético Nacional', 'Colombia', 1, '002'),
+                                        ('008', 'Flamengo', 'Brasil', 1, '002'),
+                                        ('009', 'Inter de Porto Alegre', 'Brasil', 1, '003'),
+                                        ('010', 'Al-Whada', 'Emiratos Árabes Unidos', 1, '003'),
+                                        ('011', 'Inter de Porto Alegre', 'Brasil', 1, '003'),
+                                        ('012', 'Inter de Porto Alegre', 'Brasil', 1, '003'),
+										('013', 'San José', 'Bolivia', 2, '004'),
+                                        ('014', 'Universitario de Sucre', 'Bolivia', 2, '004'),
+                                        ('015', 'Sport Boys', 'Bolivia', 2, '004'),
+                                        ('016', 'Oriente Petrolero', 'Bolivia', 2, '004'),
+                                        ('017', 'Universidad de Los Andes', 'Venezuela', 1, '005'),
+                                        ('018', 'Estudiantes de Mérida', 'Venezuela', 1, '005'),
+                                        ('019', 'Millonarios', 'Colombia', 1, '005'),
+                                        ('020', 'Cortuluá', 'Colombia', 1, '005'),
+                                        ('021', 'Selección de Argentina', 'Argentina', 0, '006'),
+                                        ('022', 'MetroStars', 'Estados Unidos', 1, '007'),
+                                        ('023', 'Real Madrir', 'España', 1, '007'),
+                                        ('024', 'Nagoya Grampus', 'Japón', 1, '007'),
+                                        ('025', 'Selección absoluta', 'Portugal', 1, '007'),
+                                        ('026', 'Selección absoluta', 'Sudáfrica', 1, '007'),
+                                        ('027', 'Atlético Naciona', 'Colombia', 1, '008'),
+                                        ('028', 'Santa Fé', 'Colombia', 1, '008'),
+                                        ('029', 'Independiente de Medellín', 'Colombia', 1, '008'),
+                                        ('030', 'Selección absoluta', 'Panamá', 1, '008'),
+                                        ('031', 'O´Higgins', 'Chile', 1, '009'),
+                                        ('032', 'Peñarol', 'Urugüay', 1, '010'),
+                                        ('033', 'Deportivo Cali', 'Colombia', 1, '010'),
+                                        ('034', 'A.C. Milan', 'Italia', 1, '010'),
+                                        ('035', 'Boca Juniors', 'Argentina', 1, '010'),
+                                        ('036', 'Sanfrece Hiroshima', 'Japón', 1, '011'),
+                                        ('037', 'F.C. Barcelona Juvenil A', 'España', 1, '012'),
+                                        ('038', 'Aspire Academy', 'Qatär', 1, '012'),
+                                        ('039', 'Selección Sub-20', 'Qatär', 1, '012'),
+                                        ('040', 'Selección Sub-23', 'Qatär', 1, '012')
+	go
+
+
+--INSERT INTO Jugador
+--VALUES('101','Pedro', 'Gallese', 'Quiroz', 28, 'La Tarantula', 3, 4, 0, 0, 0, 0, 1, 0, 0, 'Alianza Lima', 4, 1, 2, 3, 2, 0, 0, 0, '23 de febrero de 1990', '', '001'),
+--      ('102','Paolo', 'Guerrero', 'Gonzales ', 34, 'El Depredador', 6, 6, 0, 0, 0, 0, 1, 4, 3, 'Internacional FC', 126, 9, 2, 3, 2, 0, 0, 0, '1 de enero de 1984', '', '001'),
+--	  ('103','Neymar da Silva', 'Santos', 'Júnior', 27,'Ney', 5, 19, 6, 1, 6, 0, 6, 5, 2, 'París Saint-Germain', 289, 10, 2, 3, 2, 0, 0, 0, '5 de febrero de 1992', '', '002')
+--GO
